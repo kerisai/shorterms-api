@@ -40,7 +40,7 @@ func logLevel(c Config) (level zerolog.Level, err error) {
 func configureLogger(c Config) {
 	level, err := logLevel(c)
 	if err != nil {
-		stdlog.Fatal("failed to configure logger:", err)
+		stdlog.Fatal("failed to configure logger: ", err)
 	}
 	
 	zerolog.SetGlobalLevel(level)

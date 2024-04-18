@@ -21,10 +21,10 @@ func LoadConfig() (config Config) {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatal("failed to load config:", err)
+		log.Fatal("failed to load config: ", err)
 	}
 	if err := viper.Unmarshal(&config); err != nil {
-		log.Fatal("failed to load config:", err)
+		log.Fatal("failed to load config: ", err)
 	}
 
 	configureLogger(config)
