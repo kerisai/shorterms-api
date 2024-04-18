@@ -14,6 +14,14 @@ type Config struct {
 
 	// Client config
 	ClientUrl string `mapstructure:"CLIENT_URL"`
+
+	// DB config
+	DbHost    string `mapstructure:"DB_HOST"`
+	DbPort    string `mapstructure:"DB_PORT"`
+	DbName    string `mapstructure:"DB_NAME"`
+	DbUser    string `mapstructure:"DB_USER"`
+	DbPwd     string `mapstructure:"DB_PWD"`
+	DbSslmode string `mapstructure:"DB_SSLMODE"`
 }
 
 func LoadConfig() (config Config) {
