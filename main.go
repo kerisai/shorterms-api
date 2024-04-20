@@ -32,6 +32,8 @@ func main() {
 	r.MethodNotAllowed(http.MethodNotAllowed)
 	r.Get("/", http.Heartbeat)
 
+	r.Mount("/summaries", summary.Router())
+
 	log.Info().Msgf("Running server on port %s in %s mode", config.Port, config.Env)
 	stdhttp.ListenAndServe(":"+config.Port, r)
 }

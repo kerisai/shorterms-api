@@ -8,7 +8,7 @@ func Configure(clientUrl, env string) {
 	allowedOrigins = []string{clientUrl}
 	allowedMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 	if env == "local" || env == "development" {
-		allowedOrigins = append(allowedOrigins, "http://localhost:3000", "http://localhost:3001")
+		allowedOrigins = append(allowedOrigins, "http://localhost:3000", "http://localhost:3001", "https://hoppscotch.io")
 		allowedMethods = append(allowedMethods, "HEAD", "TRACE")
 	}
 
