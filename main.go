@@ -17,7 +17,7 @@ func main() {
 	dbPool := db.CreateConnPool(config)
 
 	// Configure dependencies
-	http.Configure(config)
+	http.Configure(config.ClientUrl, config.Env)
 	summary.Configure(dbPool)
 
 	r := chi.NewRouter()
