@@ -5,6 +5,9 @@ include .env
 install:
 	go mod tidy
 
+run-dev:
+	air
+
 run:
 	go run main.go
 
