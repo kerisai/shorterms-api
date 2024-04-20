@@ -4,6 +4,7 @@ import (
 	"errors"
 	stdlog "log"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -43,12 +44,19 @@ func configureLogger(c Config) {
 		stdlog.Fatal("failed to configure logger: ", err)
 	}
 
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		stdlog.Fatal("failed to configure logger: ", "failed to read build info")
+	}
+
+	buildVersion := info.Main.Version
+
 	zerolog.SetGlobalLevel(level)
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.MessageFieldName = "msg"
 
 	mw := zerolog.MultiLevelWriter(os.Stdout)
-	logger := zerolog.New(mw).With().Timestamp().Caller().Stack().Logger()
+	logger := zerolog.New(mw).With().Timestamp().Caller().Stack().Str("build_version", buildVersion).Logger()
 
 	log.Logger = logger
 
