@@ -42,7 +42,7 @@ func configureLogger(c Config) {
 	if err != nil {
 		stdlog.Fatal("failed to configure logger: ", err)
 	}
-	
+
 	zerolog.SetGlobalLevel(level)
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.MessageFieldName = "msg"
