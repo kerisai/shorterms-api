@@ -41,14 +41,14 @@ func WriteHttpInternalServerError(w http.ResponseWriter) {
 	WriteHttpError(w, http.StatusInternalServerError, ErrInternalServerError)
 }
 
-func heartbeat(w http.ResponseWriter, r *http.Request) {
+func Heartbeat(w http.ResponseWriter, r *http.Request) {
 	WriteHttpBodyJson(w, http.StatusOK, map[string]string{"message": "OK!"})
 }
 
-func notFound(w http.ResponseWriter, r *http.Request) {
+func NotFound(w http.ResponseWriter, r *http.Request) {
 	WriteHttpError(w, http.StatusNotFound, ErrNotFound)
 }
 
-func methodNotAllowed(w http.ResponseWriter, r *http.Request) {
+func MethodNotAllowed(w http.ResponseWriter, r *http.Request) {
 	WriteHttpError(w, http.StatusMethodNotAllowed, ErrMethodNotAllowed)
 }
