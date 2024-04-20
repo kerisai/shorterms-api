@@ -18,10 +18,12 @@ func CreateConnPool(c config.Config) (pool *pgxpool.Pool) {
 		log.Fatal().Err(err).Msg("failed to connect to database")
 	}
 
-	_, err = pool.Acquire(ctx)
+	conn, err := pool.Acquire(ctx)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to database")
 	}
+
+	defer conn.Release()
 
 	log.Info().Msg("Established connection to database!")
 	return pool
