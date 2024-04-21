@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kerisai/shorterms-api/config"
-	"github.com/kerisai/shorterms-api/db"
 	"github.com/kerisai/shorterms-api/http"
 	"github.com/kerisai/shorterms-api/summary"
 	"github.com/rs/zerolog/log"
@@ -63,12 +62,13 @@ func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string
 }
 
 func main() {
-	config := config.LoadConfig()
-	dbPool := db.CreateConnPool(config)
+	cfg := config.LoadConfig()
+	dbPool := config.CreateDBConnPool(cfg)
+	gemini := config.CreateGeminiClient(cfg.GeminiApiKey)
 
 	// Configure dependencies
-	http.Configure(config.ClientUrl, config.Env)
-	summary.Configure(dbPool)
+	http.Configure(cfg.ClientUrl, cfg.Env)
+	summary.Configure(dbPool, gemini)
 
 	r := chi.NewRouter()
 
@@ -85,12 +85,12 @@ func main() {
 	r.Mount("/summaries", summary.Router())
 
 	httpServer := stdhttp.Server{
-		Addr:    ":" + config.Port,
+		Addr:    ":" + cfg.Port,
 		Handler: r,
 	}
 
 	go func() {
-		log.Info().Msgf("Running server on port %s in %s mode", config.Port, config.Env)
+		log.Info().Msgf("Running server on port %s in %s mode", cfg.Port, cfg.Env)
 		httpServer.ListenAndServe()
 	}()
 

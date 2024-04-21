@@ -22,6 +22,9 @@ type Config struct {
 	DbUser    string `mapstructure:"DB_USER"`
 	DbPwd     string `mapstructure:"DB_PWD"`
 	DbSslmode string `mapstructure:"DB_SSLMODE"`
+
+	// Gemini config
+	GeminiApiKey string `mapstructure:"GEMINI_API_KEY"`
 }
 
 func LoadConfig() (config Config) {
