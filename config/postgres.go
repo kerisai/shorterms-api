@@ -1,15 +1,14 @@
-package db
+package config
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kerisai/shorterms-api/config"
 	"github.com/rs/zerolog/log"
 )
 
-func CreateConnPool(c config.Config) (pool *pgxpool.Pool) {
+func CreateDBConnPool(c Config) (pool *pgxpool.Pool) {
 	ctx := context.Background()
 	dsn := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s", c.DbHost, c.DbPort, c.DbName, c.DbUser, c.DbPwd, c.DbSslmode)
 
