@@ -56,9 +56,9 @@ func configureLogger(c Config) {
 	zerolog.MessageFieldName = "msg"
 
 	mw := zerolog.MultiLevelWriter(os.Stdout)
-	logger := zerolog.New(mw).With().Timestamp().Caller().Stack().Str("build_version", buildVersion).Logger()
+	logger := zerolog.New(mw).With().Timestamp().Caller().Stack().Str("build_version", buildVersion).Str("environment", c.Env).Logger()
 
 	log.Logger = logger
 
-	HttpLogger = zerolog.New(mw).With().Timestamp().Logger()
+	HttpLogger = zerolog.New(mw).With().Timestamp().Str("build_version", buildVersion).Str("environment", c.Env).Logger()
 }
