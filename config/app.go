@@ -24,7 +24,8 @@ type Config struct {
 	DbSslmode string `mapstructure:"DB_SSLMODE"`
 
 	// Gemini config
-	GeminiApiKey string `mapstructure:"GEMINI_API_KEY"`
+	GeminiApiKey   string `mapstructure:"GEMINI_API_KEY"`
+	GeminiGenModel string `mapstructure:"GEMINI_GEN_MODEL"`
 }
 
 func LoadConfig() (config Config) {

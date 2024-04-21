@@ -68,7 +68,7 @@ func main() {
 
 	// Configure dependencies
 	http.Configure(cfg.ClientUrl, cfg.Env)
-	summary.Configure(dbPool, gemini)
+	summary.Configure(dbPool, gemini, cfg.GeminiGenModel)
 
 	r := chi.NewRouter()
 
