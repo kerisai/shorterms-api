@@ -18,6 +18,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/longrunning v0.5.5 // indirect
 	github.com/AssemblyAI/assemblyai-go-sdk v1.3.0 // indirect
+	github.com/JohannesKaufmann/html-to-markdown v1.5.0 // indirect
 	github.com/PuerkitoBio/goquery v1.9.1 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/antchfx/htmlquery v1.3.1 // indirect
