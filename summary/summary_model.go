@@ -12,3 +12,7 @@ func NewSummaryMetadata(serviceProvider, effectiveDate string) *SummaryMetadata 
 type Summary struct {
 	SummaryMetadata
 }
+
+func NewSummary(metadata SummaryMetadata) *Summary {
+	return &Summary{SummaryMetadata: metadata}
+}

@@ -18,7 +18,7 @@ var (
 	ErrFailedToExtractMetadata     = errors.New("failed to extract metadata")
 )
 
-func summarize(ctx context.Context, linkToPage string) (summary Summary, err error) {
+func summarize(ctx context.Context, linkToPage string) (summary *Summary, err error) {
 	log := logger.With().Str("span", "summary.summarize").Logger()
 	log.Info().Fields(map[string]any{
 		"link_to_page": linkToPage,
@@ -84,5 +84,5 @@ func summarize(ctx context.Context, linkToPage string) (summary Summary, err err
 
 	log.Debug().Fields(map[string]any{"metadata": summaryMeta}).Msg("Show metadata")
 
-	return Summary{SummaryMetadata: summaryMeta}, nil
+	return NewSummary(summaryMeta), nil
 }
