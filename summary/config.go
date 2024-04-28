@@ -31,7 +31,7 @@ func Configure(dbPool *pgxpool.Pool, geminiClient *genai.Client, geminiGenModel 
 	html2md = *md.NewConverter("", true, nil)
 	logger = log.With().Str("service", "summary").Logger()
 
-	genModel.SetTemperature(0.3)
+	genModel.SetTemperature(0.4)
 
 	log.Info().Msg("Configured summary service dependencies!")
 }

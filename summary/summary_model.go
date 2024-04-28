@@ -11,8 +11,10 @@ func NewSummaryMetadata(serviceProvider, effectiveDate string) *SummaryMetadata 
 
 type Summary struct {
 	SummaryMetadata
+
+	WhatYouAgreeOn string `json:"what_you_agree_on"`
 }
 
-func NewSummary(metadata SummaryMetadata) *Summary {
-	return &Summary{SummaryMetadata: metadata}
+func NewSummary(metadata SummaryMetadata, whatYouAgreeOn string) *Summary {
+	return &Summary{SummaryMetadata: metadata, WhatYouAgreeOn: whatYouAgreeOn}
 }

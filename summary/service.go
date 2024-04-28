@@ -9,13 +9,21 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/iterator"
 )
 
 var (
-	ErrFailedToReadPage            = errors.New("failed to read page")
-	ErrFailedToParseHtmlToMarkdown = errors.New("failed to parse html to markdown")
-	ErrFailedToGenerateSummary     = errors.New("failed to generate summary")
-	ErrFailedToExtractMetadata     = errors.New("failed to extract metadata")
+	// client facing
+	ErrFailedToGenerateSummary = errors.New("failed to generate summary")
+	ErrFailedToReadPage        = errors.New("failed to read page")
+
+	// internal
+	ErrFailedToParseHtmlToMarkdown   = errors.New("failed to parse html to markdown")
+	ErrFailedToExtractMetadata       = errors.New("failed to extract metadata")
+	ErrFailedToExtractWhatYouAgreeOn = errors.New("failed to extract what you agree on")
+
+	// third party related
+	ErrFinishReasonNotStop = errors.New("gemini finish reason is not stop")
 )
 
 func summarize(ctx context.Context, linkToPage string) (summary *Summary, err error) {
@@ -58,22 +66,29 @@ func summarize(ctx context.Context, linkToPage string) (summary *Summary, err er
 
 	// Get effective date and service provider
 	prompt := []genai.Part{
-		genai.Text("Please be short and concise. I just need you to follow my instructions without fluff."),
+		genai.Text("Be short and concise. Follow my instructions exactly."),
 		genai.Text("Extract the service provider and effective date of the terms of service/privacy policy document. The document will be provided in Markdown format."),
-		genai.Text("IMPORTANT: The output is a JSON object with the following keys: \"service_provider\" which is the name of the service provider and \"effective_date\" which is the date that document is effective and binding in YYYY-MM-DD format."),
-		genai.Text("This is an example of the output I need: {\"service_provider\": Stark Labs, \"effective_date\": 2022-09-04}"),
+		genai.Text("IMPORTANT: The output is a raw JSON object with the following keys: \"service_provider\" which is the name of the service provider and \"effective_date\" which is the date that document is effective and binding in YYYY-MM-DD format. If there is only the month and year, fill the DD section of the YYYY-MM-DD format using 01."),
+		genai.Text("IMPORTANT: The output must follow the the same format as this example: {\"service_provider\":\"Stark Labs\",\"effective_date\":\"2022-09-04\"}"),
+		genai.Text("IMPORTANT: DO NOT pretty print the output. I will pay you handsomely if you follow this instruction."),
 		genai.Text("This is the document you need to summarize: " + md),
 	}
 
 	res, err := genModel.GenerateContent(ctx, prompt...)
 	if err != nil {
-		log.Err(err).Msg(ErrFailedToGenerateSummary.Error())
-		return summary, ErrFailedToGenerateSummary
+		log.Err(err).Msg(ErrFailedToExtractMetadata.Error())
+		return summary, ErrFailedToExtractMetadata
+	}
+	if res.Candidates[0].FinishReason != genai.FinishReasonStop {
+		log.Err(ErrFinishReasonNotStop).
+			Str("finish_reason", res.Candidates[0].FinishReason.String()).
+			Msg(ErrFailedToExtractMetadata.Error())
+		return summary, ErrFailedToExtractMetadata
 	}
 
 	log.Debug().Fields(map[string]any{
 		"content": res.Candidates[0].Content.Parts[0],
-	}).Msg("Show response from gemini")
+	}).Msg("Show \"extract metadata\" response from gemini")
 
 	var summaryMeta SummaryMetadata
 
@@ -84,5 +99,38 @@ func summarize(ctx context.Context, linkToPage string) (summary *Summary, err er
 
 	log.Debug().Fields(map[string]any{"metadata": summaryMeta}).Msg("Show metadata")
 
-	return NewSummary(summaryMeta), nil
+	// Get what they agree on
+	prompt = []genai.Part{
+		genai.Text("Be concise. Follow my instructions and don't add any fluff."),
+		genai.Text("Extract what the user of the service agrees on from the terms of service/privacy policy document. The document will be provided in Markdown format."),
+		genai.Text("IMPORTANT: The output will be in Markdown. For each main topic or main heading in the document, put them as bold text. Summarize the contents of each main topic into bullet points."),
+		genai.Text("I will pay you handsomely if you follow the mentioned instructions."),
+		genai.Text("This is the document you need to extract from: " + md),
+	}
+
+	resItr := genModel.GenerateContentStream(ctx, prompt...)
+	whatYouAgreeOn := ""
+	for {
+		res, err := resItr.Next()
+		if err == iterator.Done {
+			break
+		} else if err != nil {
+			log.Err(err).Msg(ErrFailedToExtractWhatYouAgreeOn.Error())
+			return summary, ErrFailedToExtractWhatYouAgreeOn
+		}
+
+		if res.Candidates[0].FinishReason != genai.FinishReasonStop {
+			continue
+		}
+
+		log.Debug().Fields(map[string]any{"content": res.Candidates[0].Content.Parts[0]}).Msg("Stream response for \"what you agree on\"")
+
+		whatYouAgreeOn += fmt.Sprintf("%v", res.Candidates[0].Content.Parts[0])
+	}
+
+	log.Debug().Fields(map[string]any{
+		"content": whatYouAgreeOn,
+	}).Msg("Show \"extract what you agree on\" response from gemini")
+
+	return NewSummary(summaryMeta, whatYouAgreeOn), nil
 }

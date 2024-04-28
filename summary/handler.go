@@ -19,10 +19,10 @@ func summarizeHandler(w http.ResponseWriter, r *http.Request) {
 	summary, err := summarize(ctx, body.LinkToPage)
 	if err != nil {
 		switch err {
-		case ErrFailedToReadPage:
+		case ErrFailedToReadPage, ErrFailedToGenerateSummary:
 			h.WriteHttpError(w, http.StatusBadRequest, err)
-		case ErrFailedToParseHtmlToMarkdown, ErrFailedToGenerateSummary, ErrFailedToExtractMetadata:
-			h.WriteHttpInternalServerError(w)
+		case ErrFailedToParseHtmlToMarkdown, ErrFailedToExtractMetadata, ErrFailedToExtractWhatYouAgreeOn:
+			h.WriteHttpError(w, http.StatusFailedDependency, ErrFailedToGenerateSummary)
 		default:
 			h.WriteHttpInternalServerError(w)
 		}
