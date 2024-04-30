@@ -63,12 +63,11 @@ func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string
 
 func main() {
 	cfg := config.LoadConfig()
-	dbPool := config.CreateDBConnPool(cfg)
 	gemini := config.CreateGeminiClient(cfg.GeminiApiKey)
 
 	// Configure dependencies
 	http.Configure(cfg.ClientUrl, cfg.Env)
-	summary.Configure(dbPool, gemini, cfg.GeminiGenModel)
+	summary.Configure(gemini, cfg.GeminiGenModel)
 
 	r := chi.NewRouter()
 
@@ -95,10 +94,6 @@ func main() {
 	}()
 
 	wait := gracefulShutdown(context.Background(), 60*time.Second, map[string]operation{
-		"database-shutdown": func(ctx context.Context) error {
-			dbPool.Close()
-			return nil
-		},
 		"http-server-shutdown": func(ctx context.Context) error {
 			return httpServer.Shutdown(ctx)
 		},
