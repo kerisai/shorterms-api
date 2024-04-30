@@ -41,4 +41,4 @@
     ENV TZ=Asia/Jakarta
     
     # Run executable
-    ENTRYPOINT [ "./bin/main" ]
+    ENTRYPOINT [ "/app/bin/main" ]
