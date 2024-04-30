@@ -69,8 +69,7 @@ func summarize(ctx context.Context, linkToPage string) (summary *Summary, err er
 	prompt := []genai.Part{
 		genai.Text("Be short and concise. Follow my instructions exactly."),
 		genai.Text("Extract the service provider and effective date of the terms of service/privacy policy document. The document will be provided in Markdown format."),
-		genai.Text("IMPORTANT: The output is a raw JSON object with the following keys: \"service_provider\" which is the name of the service provider and \"effective_date\" which is the date that document is effective and binding in YYYY-MM-DD format."),
-		genai.Text("If there is only the month and year, fill the DD section of the YYYY-MM-DD format using 01."),
+		genai.Text("IMPORTANT: The output is a raw JSON object with the following keys: \"service_provider\" which is the name of the service provider and \"effective_date\" which is the date that document is effective and binding."),
 		genai.Text("IMPORTANT: The output must follow the the same format as this example: {\"service_provider\":\"Stark Labs\",\"effective_date\":\"2022-09-04\"}"),
 		genai.Text("IMPORTANT: DO NOT pretty print the output. I will pay you handsomely if you follow this instruction."),
 		genai.Text("This is the document you need to summarize: " + md),
