@@ -104,7 +104,7 @@ func summarize(ctx context.Context, linkToPage string) (summary *Summary, err er
 	log.Info().Msg("Extract \"summary content\"")
 
 	prompt = []genai.Part{
-		genai.Text("Be direct and concise. Follow my instructions and don't add any fluff."),
+		genai.Text("Be short and concise. Follow my instructions and don't add any fluff."),
 		genai.Text("Extract what the user of the service agrees on from the terms of service/privacy policy document. The document will be provided in Markdown format."),
 		genai.Text("IMPORTANT: The output will be in Markdown. For each main topic or main heading in the document, put them as bold text. Summarize the contents of each main topic into bullet points."),
 		genai.Text("I will pay you handsomely if you follow the mentioned instructions."),
