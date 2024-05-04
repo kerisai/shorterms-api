@@ -118,6 +118,9 @@ func summarize(ctx context.Context, linkToPage string) (summary *Summary, err er
 		if err == iterator.Done {
 			break
 		} else if err != nil {
+			if res.Candidates[0].FinishReason == genai.FinishReasonRecitation {
+				break
+			}
 			log.Err(err).Msg(ErrFailedToExtractContent.Error())
 			return summary, ErrFailedToExtractContent
 		}
